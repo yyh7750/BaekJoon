@@ -78,9 +78,9 @@ public class Main {
 	 * @date : 2022.03.18
 	 */
 	public static int dfs(int[][] map, int x, int y) {
-		// 좌우
-		int[] dx = { -1, 1, 0, 0 };
 		// 상하
+		int[] dx = { -1, 1, 0, 0 };
+		// 좌우
 		int[] dy = { 0, 0, -1, 1 };
 
 		// 방문 체크
