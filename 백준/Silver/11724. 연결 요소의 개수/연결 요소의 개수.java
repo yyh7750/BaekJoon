@@ -1,6 +1,8 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.StringTokenizer;
 
 public class Main {
@@ -43,10 +45,11 @@ public class Main {
 			for (int i = 1; i <= n; i++) {
 				if (!visited[i]) {
 					result++;
-					dfs(i);
+//					dfs(i);
+					bfs(i);
 				}
 			}
-			
+
 			System.out.println(result);
 
 		} //
@@ -58,6 +61,14 @@ public class Main {
 		}
 	}
 
+	/**
+	 * @methodName : dfs
+	 * @description : 깊이우선탐색 메소드
+	 * @param index
+	 *
+	 * @author : Younghun Yu
+	 * @date : 2022.03.24
+	 */
 	private static void dfs(int index) {
 		visited[index] = true;
 
@@ -65,6 +76,31 @@ public class Main {
 		for (int i = 1; i < graph.length; i++) {
 			if (graph[index][i] == 1 && !visited[i]) {
 				dfs(i);
+			}
+		}
+	}
+
+	/**
+	 * @methodName : bfs
+	 * @description : 너비우선탐색 메소드
+	 * @param index
+	 *
+	 * @author : Younghun Yu
+	 * @date : 2022.03.24
+	 */
+	private static void bfs(int index) {
+		Queue<Integer> queue = new LinkedList<Integer>();
+		queue.add(index);
+		visited[index] = true;
+		
+		while(!queue.isEmpty()) {
+			int nIndex = queue.poll();
+			
+			for(int i =1; i < graph.length; i++) {
+				if(graph[nIndex][i] == 1 && !visited[i]) {
+					queue.add(i);
+					visited[i] = true;
+				}
 			}
 		}
 	}
