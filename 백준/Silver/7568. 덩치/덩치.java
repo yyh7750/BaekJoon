@@ -27,6 +27,8 @@ public class Main {
 					arr[i][1] = Integer.parseInt(st.nextToken()); // 키 정보
 				}
 			}
+            
+            br.close();
 
 			sb = new StringBuilder();
 
