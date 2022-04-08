@@ -19,6 +19,8 @@ public class Main {
 			a = Integer.parseInt(st.nextToken()); // 고정 비용
 			b = Integer.parseInt(st.nextToken()); // 가변 비용
 			c = Integer.parseInt(st.nextToken()); // 판매 비용
+            
+            br.close();
 
 			// 가변 비용이 판매 비용보다 작아야 이익이 창출된다.
 			if (b >= c) {
