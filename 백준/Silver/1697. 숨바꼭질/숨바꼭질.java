@@ -7,68 +7,42 @@ import java.util.StringTokenizer;
 
 public class Main {
 
-	private static int[] visited = null;
+	private static int N, K;
+	private static int[] counting;
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 
-		BufferedReader br = null;
-		StringTokenizer st = null;
-		// 현재 위치
-		int n = 0;
-		// 가야할 위치
-		int m = 0;
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer st = new StringTokenizer(br.readLine());
 
-		try {
+		N = Integer.parseInt(st.nextToken());
+		K = Integer.parseInt(st.nextToken());
+		counting = new int[100001];
 
-			br = new BufferedReader(new InputStreamReader(System.in));
-			st = new StringTokenizer(br.readLine());
+		solution();
 
-			n = Integer.parseInt(st.nextToken());
-			m = Integer.parseInt(st.nextToken());
-
-			br.close();
-			
-			// 숨바꼭질 가능 범위 0 ~ 100000
-			visited = new int[100001];
-
-			if (n == m) {
-				System.out.println(0);
-			} else {
-				bfs(n, m);
-				System.out.println(visited[m]);
-			}
-
-		} //
-		catch (IOException ioException) {
-			System.out.println("입력 오류. 다시 실행해주세요.");
-		} //
-		catch (NumberFormatException numberException) {
-			System.out.println("숫자를 입력해주세요. 다시 실행해주세요.");
-		}
+		br.close();
+		System.out.println(N == K ? 0 : counting[K]);
 	}
 
-	private static void bfs(int n, int m) {
-		Queue<Integer> queue = new LinkedList<>();
+	private static void solution() {
+		Queue<Integer> Q = new LinkedList<Integer>();
+		Q.offer(N);
 
-		queue.add(n);
-		// 방문할때마다 +1 해주기 위한 배열
-		visited[n] = 0;
+		while (!Q.isEmpty()) {
+			int cur = Q.poll();
 
-		while (!queue.isEmpty()) {
-			int x = queue.poll();
-
-			// 범위에 따라 값을 매겨준다. 0이 아닌 경우 continue
-			if (x - 1 >= 0 && visited[x - 1] == 0) {
-				visited[x - 1] = visited[x] + 1;
-				queue.add(x - 1);
+			if (cur - 1 >= 0 && cur - 1 < counting.length && counting[cur - 1] == 0) {
+				counting[cur - 1] = counting[cur] + 1;
+				Q.offer(cur - 1);
 			}
-			if (x + 1 < visited.length && visited[x + 1] == 0) {
-				visited[x + 1] = visited[x] + 1;
-				queue.add(x + 1);
+			if (cur + 1 >= 0 && cur + 1 < counting.length && counting[cur + 1] == 0) {
+				counting[cur + 1] = counting[cur] + 1;
+				Q.offer(cur + 1);
 			}
-			if (x * 2 < visited.length && visited[x * 2] == 0) {
-				visited[x * 2] = visited[x] + 1;
-				queue.add(x * 2);
+			if (cur * 2 >= 0 && cur * 2 < counting.length && counting[cur * 2] == 0) {
+				counting[cur * 2] = counting[cur] + 1;
+				Q.offer(cur * 2);
 			}
 		}
 	}
