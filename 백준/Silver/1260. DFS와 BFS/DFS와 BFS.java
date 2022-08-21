@@ -3,115 +3,66 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.Stack;
 import java.util.StringTokenizer;
 
 public class Main {
 
-	public static void main(String[] args) {
+	private static int[][] adjArr;
+	private static boolean[] visited;
+	private static StringBuilder sb = new StringBuilder();
 
-		BufferedReader br = null;
-		StringTokenizer st = null;
-		int n = 0;
-		int m = 0;
-		int v = 0;
-		int graph[][] = null;
-		boolean[] visit = null;
+	public static void main(String[] args) throws IOException {
 
-		try {
-			br = new BufferedReader(new InputStreamReader(System.in));
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer st = new StringTokenizer(br.readLine());
+
+		int N = Integer.parseInt(st.nextToken());
+		int M = Integer.parseInt(st.nextToken());
+		int V = Integer.parseInt(st.nextToken());
+
+		adjArr = new int[N + 1][N + 1];
+
+		for (int i = 0; i < M; i++) {
 			st = new StringTokenizer(br.readLine());
+			int from = Integer.parseInt(st.nextToken());
+			int to = Integer.parseInt(st.nextToken());
+			adjArr[from][to] = 1;
+			adjArr[to][from] = 1;
+		}
 
-			n = Integer.parseInt(st.nextToken());
-			m = Integer.parseInt(st.nextToken());
-			v = Integer.parseInt(st.nextToken());
+		visited = new boolean[N + 1];
+		dfs(N, V);
+		sb.append("\n");
+		visited = new boolean[N + 1];
+		bfs(N, V);
 
-			graph = new int[n + 1][n + 1];
+		System.out.println(sb);
+	}
 
-			for (int i = 0; i < m; i++) {
-				st = new StringTokenizer(br.readLine());
-				
-				int a = Integer.parseInt(st.nextToken());
-				int b = Integer.parseInt(st.nextToken());
-				graph[a][b] = 1;
-				graph[b][a] = 1;
+	private static void dfs(int N, int idx) {
+		visited[idx] = true;
+		sb.append(idx).append(" ");
+
+		for (int i = 0; i < N + 1; i++) {
+			if (!visited[i] && adjArr[idx][i] != 0) {
+				dfs(N, i);
 			}
-
-			visit = new boolean[n + 1];
-			dfs(graph, visit, v);
-			
-			System.out.println();
-			
-			visit = new boolean[n + 1];
-			bfs(graph, visit, v);
-		} //
-		catch (IOException ioException) {
-			System.out.println("입력 오류. 다시 실행해주세요.");
-		} //
-		catch (NumberFormatException numberException) {
-			System.out.println("숫자를 입력해주세요. 다시 실행해주세요.");
 		}
 	}
 
-	/**
-	 * @methodName : dfs
-	 * @description : 깊이 우선 탐색 알고리즘 - Stack 이용
-	 * @param graph
-	 * @param visit
-	 * @param v
-	 *
-	 * @author : Younghun Yu
-	 * @date : 2022.03.17
-	 */
-	public static void dfs(int[][] graph, boolean[] visit, int v) {
-		Stack<Integer> stack = new Stack<>();
-		stack.push(v);
-		visit[v] = true;
-		System.out.printf("%d ", v);
-		
-		while(!stack.isEmpty()) {
-			int now = stack.peek();
-			boolean p = false;
-			
-			for(int i =0; i < graph.length; ++i) {
-				if(graph[now][i] == 1 && !visit[i]) {
-					visit[i] = true;
-					p = true;
-					stack.push(i);
-					System.out.printf("%d ", i);
-					break;
-				}
-			}
-			
-			if(!p) {
-				stack.pop();
-			}
-		}
-	}
-	
-	/**
-	 * @methodName : bfs
-	 * @description : 너비우선탐색 알고리즘 - Queue 이용
-	 * @param graph
-	 * @param visit
-	 * @param v
-	 *
-	 * @author : Younghun Yu
-	 * @date : 2022.03.17
-	 */
-	public static void bfs(int[][] graph, boolean[] visit, int v) {
-		Queue<Integer> queue = new LinkedList<>();
-		queue.offer(v);
-		visit[v] = true;
-		
-		while(!queue.isEmpty()) {
-			int now = queue.poll();
-			System.out.printf("%d ", now);
-			
-			for(int i = 0; i < graph.length; i++) {
-				if(graph[now][i] == 1 && !visit[i]) {
-					visit[i] = true;
-					queue.offer(i);
+	private static void bfs(int N, int idx) {
+		Queue<Integer> Q = new LinkedList<Integer>();
+		Q.offer(idx);
+		visited[idx] = true;
+
+		while (!Q.isEmpty()) {
+			idx = Q.poll();
+			sb.append(idx).append(" ");
+
+			for (int i = 0; i < N + 1; i++) {
+				if (!visited[i] && adjArr[idx][i] != 0) {
+					visited[i] = true;
+					Q.offer(i);
 				}
 			}
 		}
