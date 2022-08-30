@@ -68,7 +68,7 @@ public class Main {
 	public static int solution(PriorityQueue<Node> pq, int startNode) {
 		boolean[] visited = new boolean[N + 1];
 
-		pq.offer(new Node(startNode, -1));
+		pq.offer(new Node(startNode, 1));
 
 		int fatigue = 0;
 
