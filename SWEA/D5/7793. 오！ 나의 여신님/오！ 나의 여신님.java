@@ -86,7 +86,6 @@ public class Solution {
 		visited[sr][sc] = true;
 
 		loop: while (!Q.isEmpty()) {
-			for (int cnt = 0; cnt < Q.size(); cnt++) {
 				Loc cur = Q.poll();
 
 				if (cur.type == 'S' && map[cur.r][cur.c] == 'D') {
@@ -113,7 +112,6 @@ public class Solution {
 						}
 					}
 				}
-			}
 		}
 
 		if (!flag) {
