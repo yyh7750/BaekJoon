@@ -23,7 +23,7 @@ public class Main {
 			visited = new boolean[n + 1];
 
 			cnt = 0;
-			
+
 			st = new StringTokenizer(br.readLine());
 			for (int i = 1; i <= n; i++) {
 				arr[i] = Integer.parseInt(st.nextToken());
@@ -49,6 +49,10 @@ public class Main {
 	}
 
 	private static void dfs(int cur) {
+		if (team[cur]) {
+			return;
+		}
+
 		// 사이클 완성 팀
 		if (visited[cur]) {
 			team[cur] = true;
