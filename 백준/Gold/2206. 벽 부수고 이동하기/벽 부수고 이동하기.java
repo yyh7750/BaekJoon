@@ -58,6 +58,11 @@ public class Main {
 
 		while (!Q.isEmpty()) {
 			Loc cur = Q.poll();
+			
+			if (cur.r == N - 1 && cur.c == M - 1) {
+				Ans = cur.cnt;
+				return;
+			}
 
 			for (int d = 0; d < 4; d++) {
 				int nr = cur.r + dr[d];
@@ -80,11 +85,6 @@ public class Main {
 						}
 					}
 				}
-			}
-			
-			if (cur.r == N - 1 && cur.c == M - 1) {
-				Ans = cur.cnt;
-				return;
 			}
 		}
 	}
