@@ -116,6 +116,7 @@ public class Main {
 				// 빌딩 탈출 성공
 				if (!isChecked(nr, nc) && cur.type == '@') {
 					Ans = Math.min(Ans, cur.cnt + 1);
+                    return;
 				}
 
 				if (isChecked(nr, nc) && map[nr][nc] != '#') {
