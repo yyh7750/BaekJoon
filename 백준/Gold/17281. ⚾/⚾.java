@@ -5,151 +5,156 @@ import java.util.StringTokenizer;
 
 public class Main {
 
-	private static int N, Ans;
-	private static int[][] hitters;
-	private static int[] turn;
+	private static int N, ans, score;
+	private static int[][] action; // 각 선수가 이닝에서 얻는 결과
+	private static int[] order; // 타순
 	private static boolean[] sel;
 
 	public static void main(String[] args) throws NumberFormatException, IOException {
 
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		N = Integer.parseInt(br.readLine());
 		StringTokenizer st = null;
 
-		hitters = new int[N + 1][10];
-		sel = new boolean[10];
-		turn = new int[10];
+		N = Integer.parseInt(br.readLine());
 
-		for (int i = 1; i <= N; i++) {
+		action = new int[N][9];
+		for (int i = 0; i < N; i++) {
 			st = new StringTokenizer(br.readLine());
-			for (int j = 1; j <= 9; j++) {
-				hitters[i][j] = Integer.parseInt(st.nextToken());
+			for (int j = 0; j < 9; j++) {
+				action[i][j] = Integer.parseInt(st.nextToken());
 			}
 		}
 
-		sel[4] = true;
-		turn[4] = 1;
+		// 4번 타자의 순서는 정해져 있다.
+		sel = new boolean[9];
+		sel[3] = true;
+		order = new int[9];
+		order[3] = 0;
 
-		permutation(2);
-		
+		// 1번째로 플레이하는 선수는 4번 타자로 고정이기 때문에 2번째 순서부터 시작
+		permutation(1);
+
 		br.close();
-		System.out.println(Ans);
+		System.out.println(ans);
 	}
 
-	private static void permutation(int n) {
-		if (n == 10) {
-			play();
+	private static void permutation(int idx) {
+		if (idx == 9) {
+			// 게임 시작
+			playGame();
 			return;
 		}
 
-		for (int i = 1; i <= 9; i++) {
+		for (int i = 0; i < 9; i++) {
 			if (sel[i]) {
 				continue;
 			}
-
 			sel[i] = true;
-			turn[i] = n;
-			permutation(n + 1);
+			order[i] = idx;
+			permutation(idx + 1);
 			sel[i] = false;
 		}
 	}
 
-	private static void play() {
-		int score = 0;
-		int startHitter = 1;
-		boolean[] base;
+	private static void playGame() {
+		// 각 선수들의 이닝에서 얻는 결과와 타순을 받와 왔으므로
+		// 그에 해당하는 점수를 도출한다.
 
-		for (int i = 1; i <= N; i++) {
-			int out = 0;
-			base = new boolean[4];
+		int hitter = 0;
+		score = 0;
+		
+		for (int inning = 0; inning < N; inning++) {
+			// 안타를 쳤을 경우 몇루에 선수들이 있는지 확인하기 위한 배열
+			boolean[] base = new boolean[4];
 
-			loop: while (true) {
-				for (int j = startHitter; j <= 9; j++) {
-					int hitter = hitters[i][turn[j]];
-
-					switch (hitter) {
-
-					case 0:
-						out++;
-						break;
-
-					case 1:
-						for (int k = 3; k >= 1; k--) {
-							if (base[k]) {
-								// 3루 선수 득점
-								if (k == 3) {
-									score++;
-									base[k] = false;
-									continue;
-								}
-								// 1루씩 진루
-								base[k + 1] = true;
-								base[k] = false;
-							}
-						}
-						// 홈 -> 1루
-						base[1] = true;
-						break;
-
-					case 2:
-						for (int k = 3; k >= 1; k--) {
-							if (base[k]) {
-								// 2루, 3루 득점
-								if (k == 3 || k == 2) {
-									score++;
-									base[k] = false;
-									continue;
-								}
-								// 1루 -> 3루
-								base[k + 2] = true;
-								base[k] = false;
-							}
-						}
-						// 홈 -> 2루
-						base[2] = true;
-						break;
-
-					case 3:
-						for (int k = 3; k >= 1; k--) {
-							// 1루부터 3루까지 전부 득점
-							if (base[k]) {
-								score++;
-								base[k] = false;
-							}
-						}
-						// 홈 -> 3루
-						base[3] = true;
-						break;
-
-					case 4:
-						for (int k = 3; k >= 1; k--) {
-							// 1루부터 3루까지 전부 득점
-							if (base[k]) {
-								score++;
-								base[k] = false;
-							}
-						}
-						// 득점
-						score++;
-						break;
-					}
-
-					if (out == 3) {
-						// 다음 타자로 순서 바꾸기
-						startHitter = j + 1;
-
-						if (startHitter == 10) {
-							startHitter = 1;
-						}
-
-						break loop;
-					}
-				}
-
-				startHitter = 1;
-			}
+			// 삼진아웃이 안되고 계속 점수를 낼 수 있는 경우를 고려한다.
+			// 타자의 순서가 한 사이클을 돌면 초기화 해준다.
+			// 인자는 처음 치는 타자의 순서인 0
+			hitter = getHitterOrder(inning, hitter, base);
+//			System.out.println(hitter);
 		}
 
-		Ans = Math.max(Ans, score);
+		ans = Math.max(ans, score);
+	}
+
+	private static int getHitterOrder(int inning, int hitter, boolean[] base) {
+		// 아웃카운트 3개를 세기 위한 변수
+		int out = 0;
+
+		inning: while (true) {
+			for (int orderIdx = hitter; orderIdx < 9; orderIdx++) {
+				// 해당 순서 타자의 결과
+				int hitResult = action[inning][order[orderIdx]];
+				
+				switch (hitResult) {
+				case 0:
+					out++;
+					break;
+
+				case 1:
+					for (int j = 3; j >= 1; j--) {
+						if (base[j]) {
+							if (j == 3) {
+								score++;
+								base[j] = false;
+								continue;
+							}
+							base[j] = false;
+							base[j + 1] = true;
+						}
+					}
+					base[1] = true;
+					break;
+
+				case 2:
+					for (int j = 3; j >= 1; j--) {
+						if (base[j]) {
+							if (j >= 2) {
+								score++;
+								base[j] = false;
+								continue;
+							}
+							base[j] = false;
+							base[j + 2] = true;
+						}
+					}
+					base[2] = true;
+					break;
+
+				case 3:
+					for (int j = 3; j >= 1; j--) {
+						if (base[j]) {
+							score++;
+							base[j] = false;
+						}
+					}
+					base[3] = true;
+					break;
+
+				case 4:
+					for (int j = 3; j >= 1; j--) {
+						if (base[j]) {
+							base[j] = false;
+							score++;
+						}
+					}
+					score++;
+					break;
+				}
+
+				if (out == 3) {
+					// 아웃 카운트 3개라면 다음 타자로 순서 바꾼 후 이닝 종료
+					hitter = orderIdx + 1;
+					if (hitter == 9) {
+						hitter = 0;
+					}
+					break inning;
+				}
+			}
+			// 계속 안타 칠 경우 타자 다시 초기화
+			hitter = 0;
+		}
+
+		return hitter;
 	}
 }
