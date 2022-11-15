@@ -1,41 +1,47 @@
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.StringTokenizer;
-import java.io.IOException;
 
 public class Main {
 
-	public static int[] arr;
-	public static StringBuilder sb = new StringBuilder();
+	private static int N, M;
+	private static int[] arr, sel;
+	private static StringBuilder sb = new StringBuilder();
 
 	public static void main(String[] args) throws IOException {
 
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringTokenizer st = new StringTokenizer(br.readLine());
 
-		int n = Integer.parseInt(st.nextToken());
-		int m = Integer.parseInt(st.nextToken());
+		N = Integer.parseInt(st.nextToken());
+		M = Integer.parseInt(st.nextToken());
 
-		arr = new int[m];
+		arr = new int[N];
+		sel = new int[M];
 
-		dfs(n, m, 1, 0);
+		for (int i = 0; i < N; i++) {
+			arr[i] = i + 1;
+		}
+
+		combination(0, 0);
 		
 		br.close();
 		System.out.println(sb);
 	}
 
-	public static void dfs(int n, int m, int cLocation, int depth) {
-		if (depth == m) {
-			for (int val : arr) {
-				sb.append(val).append(' ');
+	private static void combination(int depth, int k) {
+		if (k == sel.length) {
+			for (int i = 0; i < sel.length; i++) {
+				sb.append(sel[i]).append(" ");
 			}
-			sb.append('\n');
+			sb.append("\n");
 			return;
 		}
 
-		for (int i = cLocation; i <= n; i++) {
-			arr[depth] = i;
-			dfs(n, m, i + 1, depth + 1);
+		for (int i = depth; i < arr.length; i++) {
+			sel[k] = arr[i];
+			combination(i + 1, k + 1);
 		}
 	}
 }
