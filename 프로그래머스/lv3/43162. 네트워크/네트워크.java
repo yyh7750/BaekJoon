@@ -25,7 +25,7 @@ class Solution {
 	 * @author : Younghun Yu
 	 * @date : 2022.12.05
 	 */
-	boolean[] dfs(int[][] computers, int i, boolean[] visited) {
+	private void dfs(int[][] computers, int i, boolean[] visited) {
 		visited[i] = true;
 
 		for (int j = 0; j < computers.length; j++) {
@@ -33,9 +33,9 @@ class Solution {
 				continue;
 			} //
 			else if (!visited[j] && computers[i][j] == 1) {
-				visited = dfs(computers, j, visited);
+				dfs(computers, j, visited);
 			}
 		}
-		return visited;
+		return;
 	}
 }
