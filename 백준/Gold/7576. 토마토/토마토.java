@@ -1,82 +1,90 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
 import java.util.StringTokenizer;
 
 public class Main {
 
-	private static int[][] map;
-	private static int M, N, cnt;
-	private static int[] dr = { -1, 1, 0, 0 };
-	private static int[] dc = { 0, 0, -1, 1 };
-	private static List<int[]> tomato;
+    private static int N, M, ans;
+    private static int[][] map;
+    private static Queue<Loc> Q;
+    private static int[] dr = {-1, 1, 0, 0};
+    private static int[] dc = {0, 0, -1, 1};
 
-	public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException {
 
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st = new StringTokenizer(br.readLine());
-		M = Integer.parseInt(st.nextToken());
-		N = Integer.parseInt(st.nextToken());
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
 
-		map = new int[N][M];
-		tomato = new ArrayList<>();
-		for (int i = 0; i < N; i++) {
-			st = new StringTokenizer(br.readLine());
-			for (int j = 0; j < M; j++) {
-				map[i][j] = Integer.parseInt(st.nextToken());
-				if (map[i][j] == 1) {
-					tomato.add(new int[] { i, j });
-				}
-			}
-		}
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
+        map = new int[M][N];
+        Q = new LinkedList<>();
 
-		bfs();
+        for (int i = 0; i < M; i++) {
+            st = new StringTokenizer(br.readLine());
+            for (int j = 0; j < N; j++) {
+                map[i][j] = Integer.parseInt(st.nextToken());
+                if (map[i][j] == 1) {
+                    Q.offer(new Loc(i, j));
+                }
+            }
+        }
 
-		for (int i = 0; i < N; i++) {
-			for (int j = 0; j < M; j++) {
-				if(map[i][j] == 0) {
-					System.out.println(-1);
-					return;
-				}
-			}
-		}
-		
-		System.out.println(cnt - 1);
-	}
+        bfs();
 
-	private static void bfs() {
-		Queue<int[]> Q = new LinkedList<>();
-		for (int i = 0; i < tomato.size(); i++) {
-			Q.offer(new int[] { tomato.get(i)[0], tomato.get(i)[1] });
-		}
+        boolean result = checkMap();
+        if (ans == 0 && result) {
+            System.out.println(0);
+            return;
+        }
 
-		while (!Q.isEmpty()) {
-			int qSize = Q.size();
+        System.out.println(result ? ans - 1 : -1);
+    }
 
-			for (int i = 0; i < qSize; i++) {
-				int[] pollLoc = Q.poll();
-				for (int d = 0; d < 4; d++) {
-					int nr = pollLoc[0] + dr[d];
-					int nc = pollLoc[1] + dc[d];
+    private static boolean checkMap() {
+        for (int i = 0; i < M; i++) {
+            for (int j = 0; j < N; j++) {
+                if (map[i][j] == 0) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 
-					if (isChecked(nr, nc) && map[nr][nc] == 0) {
-						Q.offer(new int[] { nr, nc });
-						map[nr][nc] = 1;
-					}
-				}
-			}
-			cnt++;
-		}
-	}
+    private static void bfs() {
+        while (!Q.isEmpty()) {
+            Loc cur = Q.poll();
 
-	private static boolean isChecked(int r, int c) {
-		if (r >= 0 && r < N && c >= 0 && c < M) {
-			return true;
-		}
-		return false;
-	}
+            for (int d = 0; d < 4; d++) {
+                int nr = cur.r + dr[d];
+                int nc = cur.c + dc[d];
+
+                if (isChecked(nr, nc) && map[nr][nc] == 0) {
+                    Q.offer(new Loc(nr, nc));
+                    map[nr][nc] = map[cur.r][cur.c] + 1;
+                    ans = Math.max(ans, map[nr][nc]);
+                }
+            }
+        }
+    }
+
+    private static boolean isChecked(int nr, int nc) {
+        if (nr >= 0 && nr < M && nc >= 0 && nc < N) {
+            return true;
+        }
+        return false;
+    }
+
+    private static class Loc {
+        int r, c;
+
+        public Loc(int r, int c) {
+            this.r = r;
+            this.c = c;
+        }
+    }
 }
