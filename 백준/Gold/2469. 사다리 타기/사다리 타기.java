@@ -6,13 +6,14 @@ public class Main {
 
     private static int k, n, hideIdx;
     private static char[][] map;
-    private static char[] before, after;
 
     public static void main(String[] args) throws IOException {
 
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         k = Integer.parseInt(br.readLine());
         n = Integer.parseInt(br.readLine());
+
+        char[] before, after;
 
         char A = 'A';
         before = new char[k];
@@ -35,7 +36,7 @@ public class Main {
             }
         }
 
-        System.out.println(ladderClimbing());
+        System.out.println(ladderClimbing(before, after));
         br.close();
     }
 
@@ -44,28 +45,16 @@ public class Main {
      * 1. i번째에 '-'이 나오면 i와 i+1에 해당하는 문자열을 바꿔준다.
      * 2. i번째에 '*'이 나오면 그대로 둔다.
      */
-    private static String ladderClimbing() {
+    private static String ladderClimbing(char[] before, char[] after) {
 
         // 초기값부터 물음표 나오기 전까지 돌린다.
         for (int i = 0; i < hideIdx; i++) {
-            for (int j = 0; j < k - 1; j++) {
-                if (map[i][j] == '-') {
-                    char temp = before[j];
-                    before[j] = before[j + 1];
-                    before[j + 1] = temp;
-                }
-            }
+            swap(before, i);
         }
 
         // 결과값부터 거꾸로 사다리 타면서 물음표 나오기 전까지 돌린다.
         for (int i = n - 1; i > hideIdx; i--) {
-            for (int j = 0; j < k - 1; j++) {
-                if (map[i][j] == '-') {
-                    char temp = after[j];
-                    after[j] = after[j + 1];
-                    after[j + 1] = temp;
-                }
-            }
+            swap(after, i);
         }
 
         // 비교합시다
@@ -90,5 +79,15 @@ public class Main {
         }
 
         return sb.toString();
+    }
+
+    private static void swap(char[] arr, int idx) {
+        for (int i = 0; i < k - 1; i++) {
+            if (map[idx][i] == '-') {
+                char temp = arr[i];
+                arr[i] = arr[i + 1];
+                arr[i + 1] = temp;
+            }
+        }
     }
 }
