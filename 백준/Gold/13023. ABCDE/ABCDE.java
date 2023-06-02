@@ -5,70 +5,81 @@ import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 /**
- * Description : 친구 관계가 5명 이상인 것을 확인하는 문제. depth가 4일 경우 성립된다.
- * 
- * @date 2022. 8. 23.
- * @author 유영훈
+ * packageName    : baekjoon.gold5
+ * fileName       : ABCDE_13023
+ * author         : yyh77
+ * date           : 2023-06-01
+ * description    :
+ * ===========================================================
+ * DATE              AUTHOR             NOTE
+ * -----------------------------------------------------------
+ * 2023-06-01        yyh77       최초 생성
  */
 public class Main {
 
-	private static int N, M;
-	private static boolean flag;
-	private static ArrayList<ArrayList<Integer>> adjList;
-	private static boolean[] visited;
+    private static int N, M;
+    private static ArrayList<ArrayList<Integer>> adjList;
+    private static boolean[] visited;
 
-	public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException {
 
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st = new StringTokenizer(br.readLine());
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
 
-		// 친구 수
-		N = Integer.parseInt(st.nextToken());
-		// 친구 관계 수
-		M = Integer.parseInt(st.nextToken());
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
 
-		// 인접 리스트 객체 생성
-		adjList = new ArrayList<ArrayList<Integer>>();
-		for (int i = 0; i < N; i++) {
-			adjList.add(new ArrayList<>());
-		}
+        adjList = new ArrayList<>();
+        for (int i = 0; i < N; i++) {
+            adjList.add(new ArrayList<>());
+        }
 
-		// 인접 리스트 초기화
-		for (int i = 0; i < M; i++) {
-			st = new StringTokenizer(br.readLine());
-			int from = Integer.parseInt(st.nextToken());
-			int to = Integer.parseInt(st.nextToken());
-			adjList.get(from).add(to);
-			adjList.get(to).add(from);
-		}
-		br.close();
+        for (int i = 0; i < M; i++) {
+            st = new StringTokenizer(br.readLine());
+            int from = Integer.parseInt(st.nextToken());
+            int to = Integer.parseInt(st.nextToken());
 
-		for (int i = 0; i < N; i++) {
-			visited = new boolean[N];
-			dfs(i, 0);
-		}
+            // 친구 관계는 양방향
+            adjList.get(from).add(to);
+            adjList.get(to).add(from);
+        }
 
-		System.out.println(flag ? 1 : 0);
-	}
+        for (int i = 0; i < N; i++) {
+            visited = new boolean[N];
+            dfs(i, 0);
+        }
 
-	private static void dfs(int idx, int depth) {
-        if (flag) {
-			return;
-		}
-		// 친구관계 5명 이상 조건 만족으로 인한 true 리턴.
-		if (depth >= 4) {
-			flag = true;
-			return;
-		}
+        System.out.println(0);
+    }
 
-		// 방문배열 체크
-		visited[idx] = true;
-		// 자식 노드들 탐색 -> depth 늘려가기
-		for (int nextNode : adjList.get(idx)) {
-			if (!visited[nextNode]) {
-				dfs(nextNode, depth + 1);
-			}
-		}
-		visited[idx] = false;
-	}
+
+    /**
+     * 친구 관계가 5명 이상일 경우 성립한다.
+     *
+     * @param idx
+     * @param depth
+     */
+    private static int dfs(int idx, int depth) {
+
+        // depth가 0부터 시작이므로 4일 경우 5명 이상 성립
+        if (depth == 4) {
+            return 1;
+        }
+
+        visited[idx] = true;
+        for (int next : adjList.get(idx)) {
+            if (!visited[next]) {
+                int result = dfs(next, depth + 1);
+                if (result == 1) {
+                    System.out.println(result);
+                    System.exit(0);
+                }
+            }
+        }
+        
+        // 탐색 실패 시 되돌려주기
+        visited[idx] = false;
+
+        return 0;
+    }
 }
