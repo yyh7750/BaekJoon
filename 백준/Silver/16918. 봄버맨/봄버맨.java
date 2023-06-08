@@ -5,138 +5,135 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+/**
+ * packageName    : baekjoon.gold5
+ * fileName       : 봄버맨_48741614
+ * author         : yyh77
+ * date           : 2023-06-07
+ * description    :
+ * ===========================================================
+ * DATE              AUTHOR             NOTE
+ * -----------------------------------------------------------
+ * 2023-06-07        yyh77       최초 생성
+ */
 public class Main {
 
-	private static int R, C, N, time = 1;
-	private static int[][] map;
-	private static int[] dr = { -1, 1, 0, 0 };
-	private static int[] dc = { 0, 0, -1, 1 };
+    private static class Loc {
+        int r, c;
 
-	public static void main(String[] args) throws IOException {
+        public Loc(int r, int c) {
+            this.r = r;
+            this.c = c;
+        }
+    }
 
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st = new StringTokenizer(br.readLine());
+    private static int R, C, N, time = 1;
+    private static int[][] map;
+    private static int[] dr = {-1, 1, 0, 0};
+    private static int[] dc = {0, 0, -1, 1};
 
-		R = Integer.parseInt(st.nextToken());
-		C = Integer.parseInt(st.nextToken());
-		N = Integer.parseInt(st.nextToken());
+    public static void main(String[] args) throws IOException {
 
-		map = new int[R][C];
-		for (int i = 0; i < R; i++) {
-			st = new StringTokenizer(br.readLine());
-			String row = st.nextToken();
-			for (int j = 0; j < C; j++) {
-				if (row.charAt(j) == '.') {
-					map[i][j] = 0;
-				} //
-				else {
-					map[i][j] = 3;
-				}
-			}
-		}
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
 
-		while (time++ < N) {
-			if (time % 2 == 0) {
-				setBomb(); // 전체 폭탄 깔기
-			} //
-			else {
-				bomb(); // 3초 지난 폭탄 폭발
-			}
-		}
+        R = Integer.parseInt(st.nextToken());
+        C = Integer.parseInt(st.nextToken());
+        N = Integer.parseInt(st.nextToken());
 
-		br.close();
-		printMap();
-	}
+        map = new int[R][C];
+        for (int i = 0; i < R; i++) {
+            st = new StringTokenizer(br.readLine());
+            String str = st.nextToken();
+            for (int j = 0; j < C; j++) {
+                if (str.charAt(j) == '.') {
+                    map[i][j] = 0;
+                } //
+                else {
+                    map[i][j] = 3;
+                }
+            }
+        }
 
-	/**
-	 * Description : 전체 폭탄 깔기. 3초 타이머.
-	 * 
-	 * @return void
-	 *
-	 * @date 2022. 9. 5.
-	 * @author 유영훈
-	 */
-	private static void setBomb() {
-		for (int i = 0; i < R; i++) {
-			for (int j = 0; j < C; j++) {
-				if (map[i][j] == 0) {
-					map[i][j] = time + 3;
-				} //
-			}
-		}
-	}
+        // time 증가시키면서 폭탄 깔기, 터트리기 메소드 수행
+        while (time++ < N) {
+            if (time % 2 == 0) {
+                setBomb();
+            } //
+            else {
+                bomb();
+            }
+        }
 
-	/**
-	 * Description : 3초 지난 폭탄만 터트리기
-	 * 
-	 * @return void
-	 *
-	 * @date 2022. 9. 5.
-	 * @author 유영훈
-	 */
-	private static void bomb() {
-		List<int[]> loc = new ArrayList<int[]>();
-		for (int r = 0; r < R; r++) {
-			for (int c = 0; c < C; c++) {
-				// 3초 전에 심은 폭탄들이 터질 차례
-				if (map[r][c] == time) {
-					map[r][c] = 0;
-					for (int d = 0; d < 4; d++) {
-						int nr = r + dr[d];
-						int nc = c + dc[d];
+        // 출력
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < R; i++) {
+            for (int j = 0; j < C; j++) {
+                if (map[i][j] > 0) {
+                    sb.append('O');
+                } //
+                else {
+                    sb.append('.');
+                }
+            }
+            sb.append("\n");
+        }
+        System.out.println(sb);
+    }
 
-						if (isChecked(nr, nc)) {
-							loc.add(new int[] { nr, nc });
-						}
-					}
-				}
-			}
-		}
+    /**
+     * 폭탄 터트리기
+     * time 값과 map 원소값 비교하여 터트린 후 0으로 바꾼다.
+     * 연쇄 반응이 있기 때문에 리스트에 담은 후 한번에 처리해준다.
+     */
+    private static void bomb() {
 
-		for (int i = 0; i < loc.size(); i++) {
-			map[loc.get(i)[0]][loc.get(i)[1]] = 0;
-		}
-	}
+        List<Loc> bombList = new ArrayList<>();
 
-	/**
-	 * Description : 네 방향으로 폭탄 폭발 시키기 전 배열 인덱스 범위 검사
-	 * 
-	 * @param r : row
-	 * @param c : col
-	 * @return
-	 * @return boolean
-	 *
-	 * @date 2022. 9. 5.
-	 * @author 유영훈
-	 */
-	private static boolean isChecked(int r, int c) {
-		if (r >= 0 && r < R && c >= 0 && c < C) {
-			return true;
-		}
-		return false;
-	}
+        for (int i = 0; i < R; i++) {
+            for (int j = 0; j < C; j++) {
 
-	/**
-	 * Description : 최종 배열 출력
-	 * 
-	 * @return void
-	 *
-	 * @date 2022. 9. 5.
-	 * @author 유영훈
-	 */
-	private static void printMap() {
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < R; i++) {
-			for (int j = 0; j < C; j++) {
-				if (map[i][j] > 0) {
-					sb.append('O');
-				} //
-				else {
-					sb.append('.');
-				}
-			}
-			sb.append("\n");
-		}
-		System.out.println(sb);
-	}
+                if (map[i][j] == time) {
+
+                    // 터졌으니 값 바꿔주고
+                    map[i][j] = 0;
+
+                    for (int d = 0; d < 4; d++) {
+                        int nr = i + dr[d];
+                        int nc = j + dc[d];
+
+                        if (isChecked(nr, nc)) {
+                            // 연쇄 폭탄 터질것들 넣어주기
+                            bombList.add(new Loc(nr, nc));
+                        }
+                    }
+                }
+            }
+        }
+
+        for (Loc loc : bombList) {
+            map[loc.r][loc.c] = 0;
+        }
+    }
+
+    /**
+     * time을 기준으로 +3초 적용된 폭탄 깔기
+     */
+    private static void setBomb() {
+
+        for (int i = 0; i < R; i++) {
+            for (int j = 0; j < C; j++) {
+                if (map[i][j] == 0) {
+                    map[i][j] = time + 3;
+                }
+            }
+        }
+    }
+
+    private static boolean isChecked(int nr, int nc) {
+        if (nr >= 0 && nr < R && nc >= 0 && nc < C) {
+            return true;
+        }
+        return false;
+    }
 }

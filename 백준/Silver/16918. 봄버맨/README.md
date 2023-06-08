@@ -4,11 +4,11 @@
 
 ### 성능 요약
 
-메모리: 292496 KB, 시간: 460 ms
+메모리: 292420 KB, 시간: 456 ms
 
 ### 분류
 
-그래프 이론(graphs), 그래프 탐색(graph_traversal), 구현(implementation), 시뮬레이션(simulation)
+그래프 이론, 그래프 탐색, 구현, 시뮬레이션
 
 ### 문제 설명
 
