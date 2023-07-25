@@ -70,7 +70,7 @@ public class Main {
             if (iceberg >= 2) {
                 break;
             }
-            if (iceberg == 0) {
+            else if (iceberg == 0) {
                 return 0;
             }
 
