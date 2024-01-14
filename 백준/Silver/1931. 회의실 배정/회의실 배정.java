@@ -4,63 +4,73 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.StringTokenizer;
 
+/**
+ * packageName    : baekjoon.silver1
+ * fileName       : 회의실배정_1931
+ * author         : yyh77
+ * date           : 2024-01-13
+ * description    :
+ * ===========================================================
+ * DATE              AUTHOR             NOTE
+ * -----------------------------------------------------------
+ * 2024-01-13        yyh77       최초 생성
+ */
 public class Main {
 
-	private static int cnt = 1;
+    private static class Meeting implements Comparable<Meeting> {
 
-	private static class Time implements Comparable<Time> {
-		int start;
-		int end;
+        int startTime, endTime;
 
-		public Time(int start, int end) {
-			super();
-			this.start = start;
-			this.end = end;
-		}
+        public Meeting(int startTime, int endTime) {
+            this.startTime = startTime;
+            this.endTime = endTime;
+        }
 
-		@Override
-		public int compareTo(Time time) {
-			if (this.end != time.end) {
-				return this.end - time.end;
-			} //
-			return this.start - time.start;
-		}
+        @Override
+        public int compareTo(Meeting o) {
+            if (this.endTime != o.endTime) {
+                return this.endTime - o.endTime;
+            }
+            return this.startTime - o.startTime;
+        }
+    }
 
-		@Override
-		public String toString() {
-			return "Time [start=" + start + ", end=" + end + "]";
-		}
-	}
+    private static Meeting[] meetings;
+    private static int ans = 1;
 
-	public static void main(String[] args) throws NumberFormatException, IOException {
+    public static void main(String[] args) throws IOException {
 
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		int N = Integer.parseInt(br.readLine());
-		StringTokenizer st = null;
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int N = Integer.parseInt(br.readLine());
+        meetings = new Meeting[N];
 
-		Time[] time = new Time[N];
-		for (int i = 0; i < N; i++) {
-			st = new StringTokenizer(br.readLine());
-			time[i] = new Time(Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken()));
-		}
+        for (int i = 0; i < N; i++) {
+            StringTokenizer st = new StringTokenizer(br.readLine());
+            int startTime = Integer.parseInt(st.nextToken());
+            int endTime = Integer.parseInt(st.nextToken());
+            meetings[i] = new Meeting(startTime, endTime);
+        }
 
-		Arrays.sort(time);
-//		System.out.println(Arrays.toString(time));
+        Arrays.sort(meetings);
 
-		solution(time);
+        getMeetingCount();
 
-		br.close();
-		System.out.println(cnt);
-	}
+        System.out.println(ans);
+        br.close();
+    }
 
-	private static void solution(Time[] time) {
-		int end = time[0].end;
+    private static void getMeetingCount() {
 
-		for (int i = 1; i < time.length; i++) {
-			if (end <= time[i].start) {
-				end = time[i].end;
-				cnt++;
-			}
-		}
-	}
+        int endTime = meetings[0].endTime;
+
+        for (int i = 1; i < meetings.length; i++) {
+
+            Meeting meeting = meetings[i];
+
+            if (endTime <= meeting.startTime) {
+                endTime = meeting.endTime;
+                ans++;
+            }
+        }
+    }
 }
